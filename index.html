@@ -1,0 +1,93 @@
+<!doctype>
+<html>
+<head>
+<body>
+<div id="hook">
+	<div id="loader">
+		<div class="spinner"></div>
+	</div>
+	<span id="hook-text">Reloading...</span>
+</div>
+<div class="ajax_content" data-ajax_id="first">old text</div>
+<div class="ajax_content" data-ajax_id="second">old text</div>
+<div class="ajax_content" data-ajax_id="third">old text</div>
+<div class="ajax_content" data-ajax_id="fourth">old text</div>
+<script src="http://code.jquery.com/jquery-latest.js" type="text/javascript"></script>
+<link rel="stylesheet" href="./css/hook.css" type="text/css" />
+<script src="./js/ajax_wrapper.js"></script>
+<script>
+	//initialise the wrapper
+	var ajax_wrapper = new ajax_wrapper_();
+	var already_sent = false;
+	var ajax_counter = 0;
+	window.loadheight = $('#hook').height();
+
+	//setup
+
+	var data_object_to_call = {
+		"element1"	: {
+			"url"	:	"http://dlyx.de/ajax-wrapper/call.php",//the url where the post or get request should be send
+			"data"	:	{"ajax_id":"first"}
+		},
+
+		"element2"	: {
+			"url"	:	"http://dlyx.de/ajax-wrapper/call.php",//the url where the post or get request should be send
+			"data"	:	{"ajax_id":"second"}
+		},
+
+		"element3"	: {
+			"url"	:	"http://dlyx.de/ajax-wrapper/call.php",//the url where the post or get request should be send
+			"data"	:	{"ajax_id":"third"}
+		},
+
+		"element4"	: {
+			"url"	:	"http://dlyx.de/ajax-wrapper/call.php",//the url where the post or get request should be send
+			"data"	:	{"ajax_id":"fourth"}
+		}
+	};
+
+	//options
+	var options_for_call = {
+		"async"		: 	true,
+		"type"		: 	"GET",
+		"datatype"	: 	"JSON",
+		"cache"		:	true
+	};
+
+
+	//handle the response
+	var responseFunctionObject = {
+		"doneFunc"	:	function(response){
+			//handle the success response
+			var data = jQuery.parseJSON(response);
+			$('[data-ajax_id="'+data['ajax_id']+'"]').html(data.content);
+		},
+		"failFunc"		:	function(jqXHR, textStatus, errorThrown){
+			//handle the error response
+			if(console && console.log){
+				console.log(jqXHR, textStatus, errorThrown);
+			}
+
+		},
+		"alwaysFunc"	:	function(datajqXHR, textStatus, jqXHRerrorThrown){
+			//this function will be executes every time you use the wrapper
+			if(console && console.log){
+				console.log("AjaxWrapper-Call");
+			}
+			ajax_counter++;
+			if(ajax_counter == $(".ajax_content").length){
+				$("#hook").animate({
+					"marginTop": "-"+loadheight+"px"
+				}, 200);
+				ajax_counter = 0;
+				already_sent = false;
+			}
+		}
+
+	};
+</script>
+<script src="./js/hook.js" type="text/javascript"></script>
+<div style="height:2000px;"></div>
+</body>
+</head>
+</html>
